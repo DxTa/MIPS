@@ -11,7 +11,7 @@ main:
 	la a0, prompt //load string `promt'
 	jal printf //print
 	nop
-	jal Input //input string into buffer
+	jal InputDec //InputDec string into buffer
 	nop
 	la a0,buffer //load buffer into a0
 	jal atoi //parsing string to integer
@@ -29,21 +29,21 @@ main:
 	jal printf //printf hex number
 	nop
 
-.ent Input	
-Input:
+.ent InputDec	
+InputDec:
 	move s1,ra //store restore address
 	li s0,20 //load maximum size of `buffer'
 	li t0,0 //t0 as i
-	cont_input:
+	cont_InputDec:
 		jal getchar //get 1 char
 		nop
 		li v1,'\n'
 		sub t1,v0,v1
-		beq t1,zero,finish_input_dec //if getchar() == '\n' --> finish input
+		beq t1,zero,finish_InputDec //if getchar() == '\n' --> finish InputDec
 		nop
-		ble v0,48,cont_input //determine what is inputed
+		ble v0,48,cont_InputDec //determine what is InputDeced
 		nop
-		bge v0,57,cont_input //determine what is inputed
+		bge v0,57,cont_InputDec //determine what is InputDeced
 		nop
 		add t1,v0,zero
 		sb t1,buffer(t0) //save to buffer
@@ -52,14 +52,14 @@ Input:
 		nop
 		addi t0,t0,1 //i++
 		slt t1,s0,t0
-		beq t1,zero,cont_input //if i < 20 continue getchar
+		beq t1,zero,cont_InputDec //if i < 20 continue getchar
 		nop
-	finish_input_dec:
+	finish_InputDec:
 		sb zero,buffer(t0) #ending zero
 		move ra,s1
 		jr ra
 		nop
-.end Input
+.end InputDec
 
 
 #a0 - string
@@ -108,29 +108,29 @@ Dec2Hex:
 	la t3, result		# where answer will be stored
 	move t2, a0
 	
-	Loop_t0:
+	Loop_t0_Dec2Hex:
 
-		beqz t0, Exit		# branch to exit if counter is equal to zero
+		beqz t0, Exit_Dec2Hex		# branch to exit if counter is equal to zero
 		nop
 		rol t2, t2, 4		# rotate 4 bits to the left
 		and t4, t2, 0x0000000f	        # mask with 0..001111
-		ble t4, 9, Sum		# if less than or equal to nine, branch to sum
+		ble t4, 9, Sum_Dec2Hex		# if less than or equal to nine, branch to sum
 		nop
 		addi t4, t4, 55        # if greater than nine, add 55
 
-		b End
+		b End_Dec2Hex
 		nop
-	Sum:
+	Sum_Dec2Hex:
 		addi t4, t4, 48	# add 48 to result
-	End:
+	End_Dec2Hex:
 
 		sb t4, 0(t3)		# store hex digit into result
 		addi t3, t3, 1		# increment address counter
 		addi t0, t0, -1		# decrement loop counter
 
-		j Loop_t0
+		j Loop_t0_Dec2Hex
 		nop
-	Exit:
+	Exit_Dec2Hex:
 		li v0,1
 		jr ra
 		nop
