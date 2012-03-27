@@ -1,58 +1,58 @@
 #include <iregdef.h>
 .data
-buffer: .space 20 #*change //maximum 20 char
+buffer: .space 20 #*change #maximum 20 char
 prompt: .asciiz "Enter the decimal number to convert: "
 ans: .asciiz "\nHexadecimal equivalent: "
-result: .space 8 //result is saved here
+result: .space 8 #result is saved here
 .text
 .globl main
 
 main:
-	la a0, prompt //load string `promt'
-	jal printf //print
+	la a0, prompt #load string `promt'
+	jal printf #print
 	nop
-	jal InputDec //InputDec string into buffer
+	jal InputDec #InputDec string into buffer
 	nop
-	la a0,buffer //load buffer into a0
-	jal atoi //parsing string to integer
+	la a0,buffer #load buffer into a0
+	jal atoi #parsing string to integer
 	nop
-	add s0,v0,zero //s0 = integer parsed
+	add s0,v0,zero #s0 = integer parsed
 	
 
-	la a0, ans //load string `ans'
-	jal printf //printf
+	la a0, ans #load string `ans'
+	jal printf #printf
 	nop
-	add a0,s0,zero //load s0
-	jal Dec2Hex //call Dec2Hex to convert into hex
+	add a0,s0,zero #load s0
+	jal Dec2Hex #call Dec2Hex to convert into hex
 	nop
-	la a0,result //load result array 8 chars coressponding to 8 byte of this hexadecimal
-	jal printf //printf hex number
+	la a0,result #load result array 8 chars coressponding to 8 byte of this hexadecimal
+	jal printf #printf hex number
 	nop
 
 .ent InputDec	
 InputDec:
-	move s1,ra //store restore address
-	li s0,20 //load maximum size of `buffer'
-	li t0,0 //t0 as i
+	move s1,ra #store restore address
+	li s0,20 #load maximum size of `buffer'
+	li t0,0 #t0 as i
 	cont_InputDec:
-		jal getchar //get 1 char
+		jal getchar #get 1 char
 		nop
 		li v1,'\n'
 		sub t1,v0,v1
-		beq t1,zero,finish_InputDec //if getchar() == '\n' --> finish InputDec
+		beq t1,zero,finish_InputDec #if getchar() == '\n' --> finish InputDec
 		nop
-		ble v0,48,cont_InputDec //determine what is InputDeced
+		ble v0,48,cont_InputDec #determine what is InputDeced
 		nop
-		bge v0,57,cont_InputDec //determine what is InputDeced
+		bge v0,57,cont_InputDec #determine what is InputDeced
 		nop
 		add t1,v0,zero
-		sb t1,buffer(t0) //save to buffer
+		sb t1,buffer(t0) #save to buffer
 		add a0,t1,zero
 		jal putchar
 		nop
-		addi t0,t0,1 //i++
+		addi t0,t0,1 #i++
 		slt t1,s0,t0
-		beq t1,zero,cont_InputDec //if i < 20 continue getchar
+		beq t1,zero,cont_InputDec #if i < 20 continue getchar
 		nop
 	finish_InputDec:
 		sb zero,buffer(t0) #ending zero
