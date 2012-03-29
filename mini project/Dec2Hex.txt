@@ -11,6 +11,8 @@ main:
 	la a0, prompt #load string `promt
 	jal printf #print
 	nop
+    la a0,buffer
+    add a1,zero,20
 	jal InputDec #InputDec string into buffer
 	nop
 	la a0,buffer #load buffer into a0
@@ -23,39 +25,48 @@ main:
 	jal printf #printf
 	nop
 	add a0,s0,zero #load s0
+    la a1,result
+    add a2,zero,8
 	jal Dec2Hex #call Dec2Hex to convert into hex
 	nop
 	la a0,result #load result array 8 chars coressponding to 8 byte of this hexadecimal
 	jal printf #printf hex number
 	nop
 
+#input decimal string
+#a0 = begining address of string
+#a1 = maximum length of string
+#v0 = length of string
 .ent InputDec	
 InputDec:
 	move s1,ra #store restore address
-	li s0,20 #load maximum size of `buffer
-	li t0,0 #t0 as i
+	add s0,a1,zero #load maximum size of `buffer
+    add t0,a0,zero #load begining address of string
+	li t1,0 #t0 as i
 	cont_InputDec:
 		jal getchar #get 1 char
 		nop
 		li v1,'\n'
-		sub t1,v0,v1
-		beq t1,zero,finish_InputDec #if getchar() == '\n' --> finish InputDec
+		sub t2,v0,v1
+		beq t2,zero,finish_InputDec #if getchar() == '\n' --> finish InputDec
 		nop
 		ble v0,47,cont_InputDec #determine what is InputDeced
 		nop
 		bge v0,58,cont_InputDec #determine what is InputDeced
 		nop
-		add t1,v0,zero
-		sb t1,buffer(t0) #save to buffer
-		add a0,t1,zero
+		add t2,v0,zero
+		sb t2,0(t0) #save to buffer
+		add a0,t2,zero
 		jal putchar
 		nop
 		addi t0,t0,1 #i++
-		slt t1,s0,t0
-		beq t1,zero,cont_InputDec #if i < 20 continue getchar
+        addi t1,t1,1
+		slt t2,s0,t1
+		beq t2,zero,cont_InputDec #if i < 20 continue getchar
 		nop
 	finish_InputDec:
-		sb zero,buffer(t0) #ending zero
+		sb zero,0(t0) #ending zero
+        add v0,t0,zero
 		move ra,s1
 		jr ra
 		nop
@@ -63,6 +74,7 @@ InputDec:
 
 
 #a0 - string
+#v0 = integer
 .ent atoi
 atoi:
 	or      v0, zero, zero   # num = 0
@@ -101,11 +113,16 @@ atoi:
     	jr      ra         # return
 	nop
 .end atoi
-	
+
+#a0 = decimal number
+#a1 = begin address of hex string
+#a2 = maximum length of hex string
+#v0 = 1 --> succesful
 .ent Dec2Hex
 Dec2Hex:
-	li t0, 8		        # counter
-	la t3, result		# where answer will be stored
+	add t0,a2,zero		        # counter
+    add t3,a1,zero #begining address of hex string
+	#la t3, result		# where answer will be stored
 	move t2, a0
 	
 	Loop_t0_Dec2Hex:

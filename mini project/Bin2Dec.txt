@@ -12,9 +12,11 @@ main:
 	la a0, prompt #load string `promt
 	jal printf #print
 	nop
+    la a0,buffer
+    add a1,zero,20
 	jal InputBin #InputBin string into buffer
 	nop
-	add s2,v1,zero
+	add s2,v0,zero
 	
 	la a0, ans #load string `ans
 	jal printf #printf
@@ -27,39 +29,47 @@ main:
 	jal printf
 	nop
 
+#a0 = begining address of string in type binary
+#a1 = maximum length of string
+#v0 = length of string
 .ent InputBin	
 InputBin:
 	move s1,ra #store restore address
-	li s0,20 #load maximum size of `buffer
-	li t0,0 #t0 as i
+	add s0,zero,a1 #load maximum size of `buffer
+    add t0,a0,zero
+	li t1,0 #t0 as i
 	cont_InputBin:
 		jal getchar #get 1 char
 		nop
 		li v1,'\n'
-		sub t1,v0,v1
-		beq t1,zero,finish_InputBin #if getchar() == '\n' --> finish InputBin
+		sub t2,v0,v1
+		beq t2,zero,finish_InputBin #if getchar() == '\n' --> finish InputBin
 		nop
 		ble v0,47,cont_InputBin #determine what is InputBined
 		nop
 		bge v0,50,cont_InputBin #determine what is InputBined
 		nop
-		add t1,v0,zero
-		sb t1,buffer(t0) #save to buffer
-		add a0,t1,zero
+		add t2,v0,zero
+		sb t2,0(t0) #save to buffer
+		add a0,t2,zero
 		jal putchar
 		nop
-		addi t0,t0,1 #i++
-		slt t1,s0,t0
-		beq t1,zero,cont_InputBin #if i < 20 continue getchar
+		addi t1,t1,1 #i++
+        addi t0,t0,1
+		slt t2,s0,t1
+		beq t2,zero,cont_InputBin #if i < 20 continue getchar
 		nop
 	finish_InputBin:
-		sb zero,buffer(t0) #ending zero
-		add v1,t0,zero
+		sb zero,0(t0) #ending zero
+		add v0,t1,zero
 		move ra,s1
 		jr ra
 		nop
 .end InputBin
 
+#a0 = begining of string
+#a1 = length of string
+#v0 = decimal number
 .ent Bin2Dec
 Bin2Dec:
 	add t0,a0,zero #beginning of buffer
