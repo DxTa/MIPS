@@ -8,7 +8,7 @@ result: .space 8 #result is saved here
 .globl main
 
 main:
-	la a0, prompt #load string `promt'
+	la a0, prompt #load string `promt
 	jal printf #print
 	nop
 	jal InputDec #InputDec string into buffer
@@ -19,7 +19,7 @@ main:
 	add s0,v0,zero #s0 = integer parsed
 	
 
-	la a0, ans #load string `ans'
+	la a0, ans #load string `ans
 	jal printf #printf
 	nop
 	add a0,s0,zero #load s0
@@ -32,7 +32,7 @@ main:
 .ent InputDec	
 InputDec:
 	move s1,ra #store restore address
-	li s0,20 #load maximum size of `buffer'
+	li s0,20 #load maximum size of `buffer
 	li t0,0 #t0 as i
 	cont_InputDec:
 		jal getchar #get 1 char
@@ -41,9 +41,9 @@ InputDec:
 		sub t1,v0,v1
 		beq t1,zero,finish_InputDec #if getchar() == '\n' --> finish InputDec
 		nop
-		ble v0,48,cont_InputDec #determine what is InputDeced
+		ble v0,47,cont_InputDec #determine what is InputDeced
 		nop
-		bge v0,57,cont_InputDec #determine what is InputDeced
+		bge v0,58,cont_InputDec #determine what is InputDeced
 		nop
 		add t1,v0,zero
 		sb t1,buffer(t0) #save to buffer
@@ -135,4 +135,4 @@ Dec2Hex:
 		jr ra
 		nop
 .end Dec2Hex
-
+#The End
