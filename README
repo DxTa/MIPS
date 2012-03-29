@@ -16,7 +16,5 @@ _ Đặt tên hàm thì đặt rõ ra nhé, dài ngắn không quan trọng, ho�
 
 _ Cách đặt tên label thì đặt theo kiểu (tênlabel)_[tên biến]_(tên hàm)
 	vd: trong hàm Dec2Hex của tao có vòng lặp t0, thì đặt như sau: loop_t0_Dec2Hex
-	
 -----------------------------------
-
 Tạm thời thế đã, có bổ sung j thì viết luôn vào đây.
