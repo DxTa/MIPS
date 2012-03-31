@@ -2,7 +2,7 @@
 .data
     buffer: .space 40
     menu1: .asciiz "\n1. Dec2Hex\n"
-    menu2: .asciiz "\n2. Dec2Bin\n"
+    menu2: .asciiz "\n4. Dec2Bin\n"
     menu3: .asciiz "\n3. Bin2Dec\n"
     menu4: .asciiz "\n4. Hex2Dec\n"
     promt_decimal: .asciiz "\nEnter the decimal number to convert: "
@@ -33,7 +33,7 @@ main:
     jal putchar
     jal checkMenuAndJump
     nop
-    
+
     j main
     nop
 
@@ -93,10 +93,10 @@ Dec2HexFunction:
 #a0 = begining address of string
 #a1 = maximum length of string
 #v0 = length of string
-.ent InputDec	
+.ent InputDec
 InputDec:
 	addi sp,sp,-4
-	sw ra,0(sp)
+    sw ra,0(sp)
 	add s0,a1,zero #load maximum size of `buffer
     add t0,a0,zero #load begining address of string
 	li t1,0 #t0 as i
@@ -140,6 +140,7 @@ InputDec:
 #v0 = integer
 .ent atoi
 atoi:
+        li v1,0
 		or      v0, zero, zero   # num = 0
     	or      t1, zero, zero   # isNegative = false
     	lb      t0, 0(a0)
@@ -162,19 +163,30 @@ atoi:
     	nop
     	sll     t2, v0, 1
     	sll     v0, v0, 3
-    	add     v0, v0, t2       # num *= 10, using: num = (num << 3) + (num << 1)
+        add     v1, v0, t2       # num *= 10, using: num = (num << 3) + (num << 1)
+        blt     v1, v0, .overflow_atoi
+        nop
+        add     v0, v1, zero
     	addi    t0, t0, -48
-    	add     v0, v0, t0       # num += (*str - '0')
+    	add     v1, v0, t0       # num += (*str - '0')
+        blt     v1, v0, .overflow_atoi
+        nop
+        add     v0, v1, zero
     	addi    a0, a0, 1         # ++num
-    	j   .num_atoi
+    	j       .num_atoi
     	nop
 .done_atoi:
     	beq     t1, zero, .out_atoi    # if (isNegative) num = -num
     	nop
     	sub     v0, zero, v0
+        j       .out_atoi
+        nop
+.overflow_atoi:
+        li v1,1
+        li v0,0
 .out_atoi:
     	jr      ra         # return
-	nop
+    	nop
 .end atoi
 
 #a0 = decimal number
@@ -187,7 +199,7 @@ Dec2Hex:
     add t3,a1,zero #begining address of hex string
 	#la t3, result		# where answer will be stored
 	move t2, a0
-	
+
 	Loop_t0_Dec2Hex:
 
 		beqz t0, Exit_Dec2Hex		# branch to exit if counter is equal to zero
@@ -284,7 +296,7 @@ Dec2Bin:
     		sb t7,0(t3)
             addi t3,t3,1
             j Loop_t0_Dec2Bin
-            nop        
+            nop
 
 	Exit_Dec2Bin:
 		sb zero,0(t3) #end with zero
@@ -322,13 +334,13 @@ Bin2DecFunction:
 	addi sp,sp,4
     jr ra
     nop
-   
+
 .end Bin2DecFunction
 
 #a0 = begining address of string in type binary
 #a1 = maximum length of string
 #v0 = length of string
-.ent InputBin	
+.ent InputBin
 InputBin:
 	addi sp,sp,-4
 	sw ra,0(sp)
@@ -440,7 +452,7 @@ Hex2DecFunction:
 #a0 = begin address of string
 #a1 = maximum length of string
 #v0 = length of string
-.ent InputHex	
+.ent InputHex
 InputHex:
 	addi sp,sp,-4
 	sw ra,0(sp)
