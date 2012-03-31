@@ -8,8 +8,9 @@
     promt_decimal: .asciiz "\nEnter the decimal number to convert: "
     promt_bin: .asciiz "\nEnter the binary number: "
     promt_hex: .asciiz "\nEnter the hex number: "
+    overflow: .asciiz "\nYour input number is overflowed."
     result: .space 40
-    decimal_str: .asciiz "\n--------------%d-----------\n"
+    decimal_str: .asciiz "%d\n"
     ans: .asciiz "\nResult: "
 .text
 .globl main
@@ -64,11 +65,13 @@ Dec2HexFunction:
     jal printf
     nop
     la a0,buffer
-    add a1,zero,8
+    add a1,zero,32
     jal InputDec
     nop
     la a0,buffer
     jal atoi
+    nop
+    beq v1,1,overflow_Dec2HexFunction
     nop
     add s0,v0,zero
 
@@ -83,6 +86,13 @@ Dec2HexFunction:
     la a0,result
     jal printf
     nop
+    j out_Dec2HexFunction
+    nop
+overflow_Dec2HexFunction:
+    la a0,overflow
+    jal printf
+    nop
+out_Dec2HexFunction:
     lw ra,0(sp)
     addi sp,sp,4
     jr ra
@@ -243,6 +253,8 @@ Dec2BinFunction:
     la a0,buffer
     jal atoi
     nop
+    beq v1,1,overflow_Dec2BinFunction
+    nop
     add s0,v0,zero
 
     la a0,ans
@@ -256,11 +268,17 @@ Dec2BinFunction:
     la a0,result
     jal printf
     nop
-	lw ra,0(sp)
+    j out_Dec2BinFunction
+    nop
+overflow_Dec2BinFunction:
+    la a0, overflow
+    jal printf
+    nop
+out_Dec2BinFunction:
+    lw ra,0(sp)
     addi sp,sp,4
     jr ra
     nop
-
 .end Dec2BinFunction
 
 #a0 = decimal number
